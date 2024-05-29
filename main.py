@@ -13,8 +13,14 @@ class Usuario:
         self.saldo = 0
         self.limite = 0
 
-#Lista para armazenar os usuários
+class ContaCorrente:
+    def __init__(self,conta,usuario):
+        self.agencia = '0001'
+        self.conta = conta
+        self.usuario = usuario
+#Lista para armazenar os usuários e contas correntes
 listaUsuarios = []
+listaContasCorrente = []
 def menu():
     print("""Escolha a operação que deseja realizar:
     1 - Saque
@@ -22,7 +28,8 @@ def menu():
     3 - Extrato
     4 - Sair
     5 - Criar usuário
-    6 - Listar usuários""")
+    6 - Listar usuários
+    7 - Criar Conta""")
 
 #Sacar
 #Saque subtrai um valor menor ou igual ao saldo do usuário
@@ -39,9 +46,11 @@ def saque(usuario):
             usuario.saldo -= valor_saque
             usuario.limite += 1
             print("Saque realizado com sucesso.")
+            menu()
 
     else:
         print("Limite diário alcançado")
+        menu()
 
 #Depositar
 #Depósito adiciona um valor maior que zero ao saldo do usuário
@@ -52,6 +61,7 @@ def deposito(usuario):
     usuario.extrato.append(valor_deposito)
     usuario.saldo += valor_deposito
     print("Depósito realizado com sucesso.")
+    menu()
 
 #Ver extrato
 #Extrato deve mostrar uma lista com todo o histórico de saques e depósitos realizados e mostrar o saldo total da conta
@@ -101,13 +111,31 @@ def criarUsuario():
 
     usuario2 = Usuario(criarNome, criarNascimento, criarCPF, criarEndereco)
     listaUsuarios.append(usuario2)
+    menu()
     return usuario2
 #Listar usuarios
 def listarUsuarios():
     print("\nRetornar todos usuarios")
     for usuario in listaUsuarios:
         print(usuario.nome)
+#Filtrar lista de usuarios por cpf
+def filtrarConta(cpfFornecido):
+    return next((u for u in listaUsuarios if u.cpf == cpfFornecido), None)
 
+#Criar conta
+def criarConta():
+    cpf = input("\nDigite o CPF do usuário para quem deseja criar uma conta. Digite no formato XXX.XXX.XXX-XX")
+    #Verifica se o CPF informado está em listaUsuarios
+    usuario = filtrarConta(cpf)
+    if usuario:
+        #Cria conta baseado no CPF informado
+        numero_conta = len(listaContasCorrente) + 1
+        conta = ContaCorrente(numero_conta,cpf)
+        listaContasCorrente.append(conta)
+        print(f"\nSua conta foi criada Número da conta: {numero_conta}, Agência: {conta.agencia})")
+    else:
+        print("\nNão foi possível criar a conta")
+            
 
 #Teste
 usuario = Usuario("caio", "03/08/1998","111.111.111-2", "Rua imaginaria")
@@ -131,6 +159,8 @@ def main():
            criarUsuario()
        elif opcao =="6": #listar usuários
            listarUsuarios()
+       elif opcao == "7": #Criar conta
+           criarConta()
        else:
               print("Opção inválida.")
     menu()
